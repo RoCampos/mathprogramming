@@ -27,17 +27,18 @@ var v{ i in VERTEX, k in GROUPS}, binary;
 
 var Z{ i in 1 .. E_SIZE }, integer >= 0;
 
-maximize capacidade_residual { (i,j) in LINKS: i < j} : Z [ E[i,j] ];
+maximize capacidade_residual { (i,j) in LINKS: i < j} : cap[ E[i,j] ] - sum{k in GROUPS} x[ E[i,j] ,k] ;
 	
 	r1 {k in GROUPS, s in MAX: (s <> 2**N)  and !(K[k] within (DS[s] inter K[k])) }:
 		sum {i in VERTEX diff{ DS[s] } , j in DS[s] : (i,j) in LINKS} 
 			x[ E[i,j] ,k] >= 1;
 	
-	r2{i in VERTEX, k in GROUPS, (i,m) in LINKS}:
-		v[i,k] >= x[ E[i,m] ,k];
+	r2{i in VERTEX, k in GROUPS, (m,n) in LINKS: (m < n) and ((i = m) or (i = n)) }:
+		v[i,k] >= x[ E[m,n] ,k];
 
 	r3{i in VERTEX, k in GROUPS}:
-		v[i,k] <= sum{(i,j) in LINKS} x[ E[i,j] ,k];
+		v[i,k] <= sum{ (m,n) in LINKS: (m < n) and ( (i = m) or (i = n) )} 
+					x[ E[m,n] ,k];
 
 	r4{k in GROUPS}:
 		sum{i in VERTEX} v[i,k] = 1 + sum{ (i,j) in LINKS: i<j} x[ E[i,j],k];
@@ -47,6 +48,9 @@ maximize capacidade_residual { (i,j) in LINKS: i < j} : Z [ E[i,j] ];
 
 	r6 { (i,j) in LINKS: i < j} :
 		Z[ E[i,j] ] >= 0;
+
+#	r7 {k in GROUPS} :
+#		sum { (i,j) in LINKS} x[ E[i,j] , k] <= 1.5*OPT[k]; 
 
 data;
 
