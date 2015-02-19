@@ -19,7 +19,6 @@ param N := card (VERTEX);
 set MAX := 1 .. 2**N;
 set DS {k in MAX} ordered by VERTEX := {i in VERTEX: (k div 2**(ord(i, VERTEX) - 1) ) mod 2 = 1}; 
 
-
 #			------------------------------------------
 
 var x{ i in 1..E_SIZE , k in GROUPS }, binary;
@@ -34,14 +33,14 @@ maximize capacidade_residual { (i,j) in LINKS: i < j} : cap[ E[i,j] ] - sum{k in
 		sum {i in VERTEX diff{ DS[s] } , j in DS[s] : (i,j) in LINKS} 
 			x[ E[i,j] ,k] >= 1;
 	
-		r2{i in VERTEX, k in GROUPS, (i,m) in LINKS: i<m}:
+	r2{i in VERTEX, k in GROUPS, (i,m) in LINKS}:
 		v[i,k] >= x[ E[i,m] ,k];
 
 	r3{i in VERTEX, k in GROUPS}:
-		v[i,k] <= sum{(i,j) in LINKS: i<j} x[ E[i,j] ,k];
+		v[i,k] <= sum{(i,j) in LINKS} x[ E[i,j] ,k];
 
 	r4{k in GROUPS}:
-		sum{i in VERTEX} v[i,k] = 1 + sum{ (i,j) in LINKS: i< j} x[ E[i,j],k];
+		sum{i in VERTEX} v[i,k] = 1 + sum{ (i,j) in LINKS: i<j} x[ E[i,j],k];
 
 #	r5 {(i,j) in LINKS: i<j} :
 #		cap[ E[i,j] ] - sum{k in GROUPS} x[ E[i,j] ,k] >= Z[ E[i,j] ];
@@ -104,7 +103,7 @@ param : cost cap :=
 	1 1 2
 	2 1 2
 	3 1 2
-	4 1 -1
+	4 1 2
 	5 1 2
 	6 1 2
 	7 1 2
