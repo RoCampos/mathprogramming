@@ -33,9 +33,12 @@ minimize objective{k in GROUPS}: sum { (i,j) in LINKS} cost[i,j]*y[i,j,k];
 	r4{k in GROUPS, d in MGROUPS[k], (i,j) in LINKS}:
 		x[i,j,k,d] <= y[i,j,k];
 
+	r5{k in GROUPS, (i,j) in LINKS}:
+		cap[i,j] - sum{ (m,n) in LINKS} y[m,n,k] >= 0;
+
 solve;
 
-#display y;
+display y;
 display objective;
 display sum {k in GROUPS} objective[k];
 
