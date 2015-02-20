@@ -16,7 +16,7 @@ var y{(i,j) in LINKS, k in GROUPS}, binary;
 var x{ (i,j) in LINKS, k in GROUPS, d in MGROUPS[k]} >=0 ;
 
 
-minimize objective{k in GROUPS}: sum { (i,j) in LINKS} cost[i,j]*y[i,j,k];
+minimize objective: sum { k in GROUPS, (i,j) in LINKS } cost[i,j]*y[i,j,k];
 
 	r1{k in GROUPS, d in MGROUPS[k]}:
 		sum {(i,Mroot[k]) in  LINKS} x[i, Mroot[k], k, d] -
@@ -33,14 +33,14 @@ minimize objective{k in GROUPS}: sum { (i,j) in LINKS} cost[i,j]*y[i,j,k];
 	r4{k in GROUPS, d in MGROUPS[k], (i,j) in LINKS}:
 		x[i,j,k,d] <= y[i,j,k];
 
-	r5{k in GROUPS, (i,j) in LINKS}:
-		cap[i,j] - sum{ (m,n) in LINKS} y[m,n,k] >= 0;
+	r5{(i,j) in LINKS}:
+		cap[i,j] - sum{ k in GROUPS } y[i,j,k] >= 0;
 
 solve;
 
 display y;
 display objective;
-display sum {k in GROUPS} objective[k];
+#display sum {k in GROUPS} objective[k];
 
 data;
 
