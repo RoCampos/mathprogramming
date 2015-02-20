@@ -12,6 +12,8 @@ param cost{LINKS} default 1;
 param cap{LINKS} default 2;
 param traffic{k in GROUPS} default 1;
 
+param BUDGET default 40000;
+
 
 var y{(i,j) in LINKS, k in GROUPS}, binary;
 var x{ (i,j) in LINKS, k in GROUPS, d in MGROUPS[k]} >=0 ;
@@ -21,7 +23,7 @@ var Z{ (i,j) in LINKS}, integer >= 0;
 
 #maximize objective{ (i,j) in LINKS}: cap[i,j] - sum{ k in GROUPS } y[i,j,k];
 
-minimize objective{ (i,j) in LINKS}: sum{ k in GROUPS } y[i,j,k];
+minimize objective{ (i,j) in LINKS}: sum{ k in GROUPS } y[i,j,k]*traffic[k];
 
 	r1{k in GROUPS, d in MGROUPS[k]}:
 		sum {(i,Mroot[k]) in  LINKS} x[i, Mroot[k], k, d] -
@@ -44,14 +46,18 @@ minimize objective{ (i,j) in LINKS}: sum{ k in GROUPS } y[i,j,k];
 	r6{(i,j) in LINKS}:
 		Z[i,j] >=0;
 
+
+	r7: sum { (i,j) in LINKS, k in GROUPS} y[i,j,k]*cost[i,j] <= BUDGET	;
+
 solve;
 
-for {k in GROUPS, (i,j) in LINKS: y[i,j,k] = 1}
-{
-	printf "%s -- %s:%s\n", i,j,k;
-}
+#for {k in GROUPS, (i,j) in LINKS: y[i,j,k] = 1}
+#{
+	#printf "%s -- %s:%s\n", i,j,k;
+#}
 
 display 'CAPACIDADE RESIDUAL', min {(i,j) in LINKS} (cap[i,j] - sum{ k in GROUPS } y[i,j,k]*traffic[k]);
+display 'CUSTO', sum { (i,j) in LINKS, k in GROUPS} y[i,j,k]*cost[i,j];
 
 data;
 
