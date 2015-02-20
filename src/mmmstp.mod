@@ -13,6 +13,7 @@ param cap{LINKS} default 2;
 param traffic{k in GROUPS} default 1;
 
 param BUDGET default 40000;
+param OPT{k in GROUPS};
 
 
 var y{(i,j) in LINKS, k in GROUPS}, binary;
@@ -47,17 +48,25 @@ minimize objective{ (i,j) in LINKS}: sum{ k in GROUPS } y[i,j,k]*traffic[k];
 		Z[i,j] >=0;
 
 
-	r7: sum { (i,j) in LINKS, k in GROUPS} y[i,j,k]*cost[i,j] <= BUDGET	;
+	r7: sum { (i,j) in LINKS, k in GROUPS} y[i,j,k]*cost[i,j] <= 20000;
+
+	r8{k in GROUPS}:
+		sum { (i,j) in LINKS} y[i,j,k] <= 1.5*OPT[k];
 
 solve;
 
 #for {k in GROUPS, (i,j) in LINKS: y[i,j,k] = 1}
 #{
-	#printf "%s -- %s:%s\n", i,j,k;
+#	#printf "%s -- %s:%s\n", i,j,k;
 #}
 
 display 'CAPACIDADE RESIDUAL', min {(i,j) in LINKS} (cap[i,j] - sum{ k in GROUPS } y[i,j,k]*traffic[k]);
 display 'CUSTO', sum { (i,j) in LINKS, k in GROUPS} y[i,j,k]*cost[i,j];
+
+for {k in GROUPS}  {
+	printf "%s = %s\n", k, sum { (i,j) in LINKS} y[i,j,k];
+
+}
 
 data;
 
