@@ -10,6 +10,7 @@ param Mroot{k in GROUPS};
 
 param cost{LINKS} default 1;
 param cap{LINKS} default 2;
+param traffic{k in GROUPS} default 1;
 
 
 var y{(i,j) in LINKS, k in GROUPS}, binary;
@@ -34,13 +35,18 @@ minimize objective: sum { k in GROUPS, (i,j) in LINKS } cost[i,j]*y[i,j,k];
 		x[i,j,k,d] <= y[i,j,k];
 
 	r5{(i,j) in LINKS}:
-		cap[i,j] - sum{ k in GROUPS } y[i,j,k] >= 0;
+		cap[i,j] - sum{ k in GROUPS } y[i,j,k]*traffic[k] >= 0;
 
 solve;
 
-display y;
+#display {(i,j) in LINKS}: cap[i,j], sum{ k in GROUPS } y[i,j,k]*traffic[k];
+for {k in GROUPS, (i,j) in LINKS: y[i,j,k] = 1}
+{
+	printf "%s -- %s:%s\n", i,j,k;
+}
+
 display objective;
-#display sum {k in GROUPS} objective[k];
+
 
 data;
 
