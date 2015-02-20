@@ -33,12 +33,12 @@ maximize capacidade_residual { (i,j) in LINKS: i < j} : cap[ E[i,j] ] - sum{k in
 		sum {i in VERTEX diff{ DS[s] } , j in DS[s] : (i,j) in LINKS} 
 			x[ E[i,j] ,k] >= 1;
 	
-	r2{i in VERTEX, k in GROUPS, (m,n) in LINKS: (m < n) and ((i = m) or (i = n)) }:
-		v[i,k] >= x[ E[m,n] ,k];
+	#r2{i in VERTEX, k in GROUPS, (m,n) in LINKS: (m < n) and ((i = m) or (i = n)) }:
+	#	v[i,k] >= x[ E[m,n] ,k];
 
-	r3{i in VERTEX, k in GROUPS}:
-		v[i,k] <= sum{ (m,n) in LINKS: (m < n) and ( (i = m) or (i = n) )} 
-					x[ E[m,n] ,k];
+	#r3{i in VERTEX, k in GROUPS}:
+	#	v[i,k] <= sum{ (m,n) in LINKS: (m < n) and ( (i = m) or (i = n) )} 
+	#				x[ E[m,n] ,k];
 
 	r4{k in GROUPS}:
 		sum{i in VERTEX} v[i,k] = 1 + sum{ (i,j) in LINKS: i<j} x[ E[i,j],k];
@@ -49,12 +49,9 @@ maximize capacidade_residual { (i,j) in LINKS: i < j} : cap[ E[i,j] ] - sum{k in
 	r6 { (i,j) in LINKS: i < j} :
 		Z[ E[i,j] ] >= 0;
 
-#	r7 {k in GROUPS} :
-#		sum { (i,j) in LINKS} x[ E[i,j] , k] <= 1.5*OPT[k]; 
-
 data;
 
-set VERTEX := 1 2 3 4 5;
+set VERTEX := 1 2 3 4 5 6;
 
 set LINKS :=
 	(1,2)
@@ -64,7 +61,9 @@ set LINKS :=
 	(2,3)
 	(2,4)
 	(3,5)
-	(3,4) 
+	(3,4)
+	(1,6)
+	(6,5)
 
 	(2,1)
 	(4,1)
@@ -73,7 +72,9 @@ set LINKS :=
 	(3,2)
 	(4,2)
 	(5,3)
-	(4,3);
+	(4,3)
+	(6,1)
+	(5,6);
 
 param E :=
 	1 2 1
@@ -84,6 +85,8 @@ param E :=
 	2 4 6
 	3 5 7
 	3 4 8
+	1 6 9
+	6 5 10
 	
 	2 1 1
 	4 1 2
@@ -92,9 +95,11 @@ param E :=
 	3 2 5
 	4 2 6
 	5 3 7
-	4 3 8;
+	4 3 8
+	6 1 9
+	5 6 10;
 
-param E_SIZE := 8;
+param E_SIZE := 10;
 
 set GROUPS := 1 2 3;
 
@@ -111,7 +116,9 @@ param : cost cap :=
 	5 1 2
 	6 1 2
 	7 1 2
-	8 1 2;
+	8 1 2
+	9 1 2
+	10 1 2;
 
 
 #pares de grupo/mebro
