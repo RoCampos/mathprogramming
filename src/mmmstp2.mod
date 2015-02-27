@@ -48,6 +48,9 @@ maximize objective: Z;
 	r8{ (i,j) in LINKS, k in GROUPS: Mroot[k] = j}:
 		y[i,j,k] = 0;
 
+	r6:
+		sum {k in GROUPS, (i,j) in LINKS} y[i,j,k]*cost[i,j] <=BUDGET;
+
 solve;
 
 #for {k in GROUPS} 
