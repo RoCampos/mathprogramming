@@ -9,22 +9,19 @@ set MGROUPS{k in GROUPS} := {i in VERTEX: (k,i) in MEMBER};
 param Mroot{k in GROUPS};
 
 param cost{LINKS} default 1;
-param cap{LINKS} default 2;
-param traffic{k in GROUPS} default 1;
+param cap{LINKS} default 4;
+param traffic{k in GROUPS} default 2;
 
-param BUDGET default 40000;
+param BUDGET default 15000;
 param OPT{k in GROUPS};
 
 
 var y{(i,j) in LINKS, k in GROUPS}, binary;
-var x{ (i,j) in LINKS, k in GROUPS, d in MGROUPS[k]} >=0 ;
+var x{ (i,j) in LINKS, k in GROUPS, d in MGROUPS[k]}, binary;
 
-var Z{ (i,j) in LINKS}, integer >= 0;
+var Z, integer >= 0;
 
-
-#maximize objective{ (i,j) in LINKS}: cap[i,j] - sum{ k in GROUPS } y[i,j,k];
-
-minimize objective{ (i,j) in LINKS}: sum{ k in GROUPS } y[i,j,k]*traffic[k];
+maximize objective: Z;
 
 	r1{k in GROUPS, d in MGROUPS[k]}:
 		sum {(i,Mroot[k]) in  LINKS} x[i, Mroot[k], k, d] -
@@ -42,73 +39,43 @@ minimize objective{ (i,j) in LINKS}: sum{ k in GROUPS } y[i,j,k]*traffic[k];
 		x[i,j,k,d] <= y[i,j,k];
 
 	r5{(i,j) in LINKS}:
-		cap[i,j] - sum{ k in GROUPS } y[i,j,k]*traffic[k] >= Z[i,j];
+		cap[i,j] - sum{ k in GROUPS } (y[i,j,k] + y[j,i,k] )*traffic[k] >= Z;
+	
+	r7{i in VERTEX, k in GROUPS}:
+		sum { (j,m) in LINKS: m=i and m <> Mroot[k]} y[j,m,k] <=1;
 
-	r6{(i,j) in LINKS}:
-		Z[i,j] >=0;
-
-
-	r7: sum { (i,j) in LINKS, k in GROUPS} y[i,j,k]*cost[i,j] <= 20000;
-
-	r8{k in GROUPS}:
-		sum { (i,j) in LINKS} y[i,j,k] <= 1.5*OPT[k];
+	#fix incoming flow on the root of k
+	r8{ (i,j) in LINKS, k in GROUPS: Mroot[k] = j}:
+		y[i,j,k] = 0;
 
 solve;
 
-#for {k in GROUPS, (i,j) in LINKS: y[i,j,k] = 1}
+#for {k in GROUPS} 
 #{
-#	#printf "%s -- %s:%s\n", i,j,k;
+#	printf "digraph{\n";
+#	for { (i,j) in LINKS: y[i,j,k] = 1} 
+#	{
+#		printf "%s -> %s:%s\n", i,j,k;
+#	}
+#	printf "}\n";
 #}
 
-display 'CAPACIDADE RESIDUAL', min {(i,j) in LINKS} (cap[i,j] - sum{ k in GROUPS } y[i,j,k]*traffic[k]);
-display 'CUSTO', sum { (i,j) in LINKS, k in GROUPS} y[i,j,k]*cost[i,j];
+for {k in GROUPS} {
+	printf "digraph{\n";
+	for { (i,j) in LINKS, d in MGROUPS[k]: (x[i,j,k,d] = 1  or x[j,i,k,d] = 1) and i<j } 
+	{
+		printf "%s -- %s:%s\n", i,j,k;
+	}
+	printf "}\n";
+}	
 
-for {k in GROUPS}  {
-	printf "%s = %s\n", k, sum { (i,j) in LINKS} y[i,j,k];
+display {k in GROUPS} sum { (i,j) in LINKS: y[i,j,k] = 1} cost[i,j];
 
-}
+#display min {(i,j) in LINKS: i<j} cap[i,j];
 
-data;
+display min {(i,j) in LINKS}
+		(cap[i,j] - sum{ k in GROUPS } (y[i,j,k])*traffic[k]);
 
-set VERTEX := 1 2 3 4 5 6;
+#display objective;
 
-set LINKS :=
-	(1,2)
-	(1,4)
-	(1,5)
-	(2,5)
-	(2,3)
-	(2,4)
-	(3,5)
-	(3,4)
-	(1,6)
-	(6,5)
-
-	(2,1)
-	(4,1)
-	(5,1)
-	(5,2)
-	(3,2)
-	(4,2)
-	(5,3)
-	(4,3)
-	(6,1)
-	(5,6);
-
-
-set GROUPS := 1 2 3;
-
-param Mroot :=
-	1 1
-	2 1
-	3 3;
-
-#pares de grupo/mebro
-set MEMBER := 
-	1 2
-	1 4
-	2 3
-	2 5
-	3 1
-	3 2;
-
+#display sum {k in GROUPS,(i,j) in LINKS: i<j} (y[i,j,k] + y[j,i,k])*cost[i,j];
