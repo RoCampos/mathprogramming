@@ -16,7 +16,7 @@ param BUDGET default 15000;
 param OPT{k in GROUPS};
 
 
-var y{(i,j) in LINKS, k in GROUPS}, binary;
+var y{ (i,j) in LINKS, k in GROUPS}, binary;
 var x{ (i,j) in LINKS, k in GROUPS, d in MGROUPS[k]}, binary;
 
 var Z, integer >= 0;
@@ -41,6 +41,7 @@ maximize objective: Z;
 	r5{(i,j) in LINKS}:
 		cap[i,j] - sum{ k in GROUPS } (y[i,j,k] + y[j,i,k] )*traffic[k] >= Z;
 	
+	#avoiding circle, on vertex receive two flow of diferent vertex
 	r7{i in VERTEX, k in GROUPS}:
 		sum { (j,m) in LINKS: m=i and m <> Mroot[k]} y[j,m,k] <=1;
 
