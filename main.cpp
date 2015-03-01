@@ -21,7 +21,7 @@ int main (int argv, char**argc)
   	f_input.ignore (std::numeric_limits<std::streamsize>::max(), '\n');  
   
   	static const boost::regex ex("\\D\\W(\\d*)\\W(\\d*)\\W(\\d*)\\W(\\d*)\\W ([1])");
-  	std::string fmt = "$1 - $2:$3 $4;";
+  	std::string fmt = "$1 - $2:$3;";
   
   	while (f_input.good ()) {
    
