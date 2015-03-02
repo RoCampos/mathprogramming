@@ -8,11 +8,11 @@ set MEMBER dimen 2;
 set MGROUPS{k in GROUPS} := {i in VERTEX: (k,i) in MEMBER}; 
 param Mroot{k in GROUPS};
 
-param cost{LINKS} default 1;
+param cost{LINKS} default 2;
 param cap{LINKS} default 4;
 param traffic{k in GROUPS} default 2;
 
-param BUDGET default 15000;
+param BUDGET default 6;
 param OPT{k in GROUPS};
 
 
@@ -50,7 +50,7 @@ maximize objective: Z;
 		y[i,j,k] = 0;
 
 	r6:
-		sum {k in GROUPS, (i,j) in LINKS} y[i,j,k]*cost[i,j] <=BUDGET;
+		sum {k in GROUPS} sum {(i,j) in LINKS} y[i,j,k]*cost[i,j] <=BUDGET;
 
 solve;
 
