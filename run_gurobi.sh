@@ -7,7 +7,7 @@ gurobi_instances=$1
 output=$2
 
 
-for inst in `ls ${gurobi_instances}`
+for inst in `ls -vBh ${gurobi_instances}`
 do
 	file=`basename ${inst} .lp.gz`
 
