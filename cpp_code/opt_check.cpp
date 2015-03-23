@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <libgen.h>
 
 using namespace std;
 
@@ -12,16 +13,20 @@ int main (int argv, char**argc)
 	ifstream file (argc[1]);
 	string str;
 
+	//getting the instance
+	char* inst = basename (argc[1]);
+
 	float best, bound;
 	float gap;
-	while ( getline (file, str) ) {
+	while ( getline (file, str) ) { //search for line where the result is
 
+		//testing the matching with result
 		sscanf (str.c_str(), "Best objective %f, best bound %f, gap %f%",
 				&best,&bound,&gap);
-
 	}
 
-	printf ("%s\tBest %d\tBound %d\tGap %.2f\n",argc[1],(int)best,(int)bound,gap);
+	//printing out the result
+	printf ("%s\t%d\t%d\t%.2f\n",inst,(int)best,(int)bound,gap);
 		
 
 	return 0;
