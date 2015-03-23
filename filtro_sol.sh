@@ -10,7 +10,7 @@ for inst in `ls ${sol_instances} --hide *.info`
 do
 
 	tmp=`basename ${inst} .sol` 
-	./filtro2 ${sol_instances}/$inst ${output}/${tmp}.opt;
+	./bin/filtro2 ${sol_instances}/$inst ${output}/${tmp}.opt;
 
 	#sort in reverse order(by opt)	
 	#joga conteúdo em arquivo temporário (tmp)

@@ -15,9 +15,17 @@ do
 	file=`basename ${inst} .dat`
 
 	#cria arquivos *.lp para servir de entrada no gurobi
-	#glpsol --check --wlp ${output}/${file}.lp --math src/mmmstp.mod --data ${data_instances}/${inst}
-	${bin} ${data_instances}/${inst} > ${output}/${file}.lp
-	gzip ${output}/${file}.lp
-	rm ${output}/${file}.lp
+	time glpsol --check --wlp ${output}/${file}.lp --math src/mmmstp2.mod --data ${data_instances}/${inst}
+
+	# Usa o Binário LpGenerator para gerar as instâncias
+	
+	#cria LP e adiciona no diretório ${output}
+	#${bin} ${data_instances}/${inst} > ${output}/${file}.lp
+
+	#comprime o arquivo gerando um gz.
+	#gzip ${output}/${file}.lp
+
+	#remove arquivo lp
+	#rm ${output}/${file}.lp
 
 done
