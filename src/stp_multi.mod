@@ -36,6 +36,6 @@ minimize stpd:
 
 solve;
 
-#display x;
-#display y;
 display stpd;
+display 'TK = ', sum { (i,j) in LINKS: y[i,j] = 1}  y[i,j];
+

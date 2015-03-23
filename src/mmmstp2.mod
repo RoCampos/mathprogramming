@@ -8,15 +8,15 @@ set MEMBER dimen 2;
 set MGROUPS{k in GROUPS} := {i in VERTEX: (k,i) in MEMBER}; 
 param Mroot{k in GROUPS};
 
-param cost{LINKS} default 1;
+param cost{LINKS} default 2;
 param cap{LINKS} default 4;
 param traffic{k in GROUPS} default 2;
 
-param BUDGET default 15000;
+param BUDGET default 6;
 param OPT{k in GROUPS};
 
 
-var y{(i,j) in LINKS, k in GROUPS}, binary;
+var y{ (i,j) in LINKS, k in GROUPS}, binary;
 var x{ (i,j) in LINKS, k in GROUPS, d in MGROUPS[k]}, binary;
 
 var Z, integer >= 0;
@@ -41,12 +41,16 @@ maximize objective: Z;
 	r5{(i,j) in LINKS}:
 		cap[i,j] - sum{ k in GROUPS } (y[i,j,k] + y[j,i,k] )*traffic[k] >= Z;
 	
+	#avoiding circle, on vertex receive two flow of diferent vertex
 	r7{i in VERTEX, k in GROUPS}:
 		sum { (j,m) in LINKS: m=i and m <> Mroot[k]} y[j,m,k] <=1;
 
 	#fix incoming flow on the root of k
 	r8{ (i,j) in LINKS, k in GROUPS: Mroot[k] = j}:
 		y[i,j,k] = 0;
+
+	r6:
+		sum {k in GROUPS} sum {(i,j) in LINKS} y[i,j,k]*cost[i,j] <=BUDGET;
 
 solve;
 
