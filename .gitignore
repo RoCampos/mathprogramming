@@ -1,7 +1,9 @@
 *~
 data/
+data2/
 filter
 filter_x
 gurobi.log
 filtro2
 bin/
+tmp/
