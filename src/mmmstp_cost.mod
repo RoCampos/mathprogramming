@@ -36,8 +36,8 @@ minimize objective: sum {k in GROUPS} sum {(i,j) in LINKS} y[i,j,k]*cost[i,j];
 	r4{k in GROUPS, d in MGROUPS[k], (i,j) in LINKS}:
 		x[i,j,k,d] <= y[i,j,k];
 
-	#r5{(i,j) in LINKS}:
-	#	cap[i,j] - sum{ k in GROUPS } (y[i,j,k] + y[j,i,k] )*traffic[k] >= 0;
+	r5{(i,j) in LINKS}:
+		cap[i,j] - sum{ k in GROUPS } (y[i,j,k] + y[j,i,k] )*traffic[k] >= Z;
 	
 	#avoiding circle, on vertex receive two flow of diferent vertex
 	r7{i in VERTEX, k in GROUPS}:
@@ -47,10 +47,13 @@ minimize objective: sum {k in GROUPS} sum {(i,j) in LINKS} y[i,j,k]*cost[i,j];
 	r8{ (i,j) in LINKS, k in GROUPS: Mroot[k] = j}:
 		y[i,j,k] = 0;
 
-	r6{(i,j) in LINKS}:
-		 sum {k in GROUPS} y[i,j,k] <= Z;
+	#r6{(i,j) in LINKS}:
+	#	 sum {k in GROUPS} y[i,j,k] >= Z;
 
 solve;
+
+display Z;
+display r5;
 
 #for {k in GROUPS} 
 #{
