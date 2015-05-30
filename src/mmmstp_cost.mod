@@ -12,7 +12,7 @@ param traffic{k in GROUPS} default 2;
 
 param BUDGET default 6;
 param OPT{k in GROUPS};
-param Z;
+param Z default 3;
 
 var y{ (i,j) in LINKS, k in GROUPS}, binary;
 var x{ (i,j) in LINKS, k in GROUPS, d in MGROUPS[k]}, binary;
@@ -36,6 +36,11 @@ minimize objective: sum {k in GROUPS} sum {(i,j) in LINKS} y[i,j,k]*cost[i,j];
 	r4{k in GROUPS, d in MGROUPS[k], (i,j) in LINKS}:
 		x[i,j,k,d] <= y[i,j,k];
 
+	#proposta por elizabeth
+	out{k in GROUPS, (i,j) in LINKS}:
+		sum{d in MGROUPS[k]} x[i,j,k,d] - y[i,j,k] >= 0;
+
+
 	r5{(i,j) in LINKS}:
 		cap[i,j] - sum{ k in GROUPS } (y[i,j,k] + y[j,i,k] )*traffic[k] >= Z;
 	
@@ -43,12 +48,6 @@ minimize objective: sum {k in GROUPS} sum {(i,j) in LINKS} y[i,j,k]*cost[i,j];
 	r7{i in VERTEX, k in GROUPS}:
 		sum { (j,m) in LINKS: m=i and m <> Mroot[k]} y[j,m,k] <=1;
 
-	#fix incoming flow on the root of k
-	r8{ (i,j) in LINKS, k in GROUPS: Mroot[k] = j}:
-		y[i,j,k] = 0;
-
-	#r6{(i,j) in LINKS}:
-	#	 sum {k in GROUPS} y[i,j,k] >= Z;
 
 solve;
 
