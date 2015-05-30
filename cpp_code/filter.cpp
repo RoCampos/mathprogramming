@@ -14,7 +14,7 @@ int main (int argc, char**argv)
 		sscanf (line.c_str(), "y(%d,%d,%d) %d", &v, &w, &k, &bin );
 
 		if (bin == 1)
-			std::cout << (v-1) << " - " << (w-1) << ":" << k << ";\n"; 
+			std::cout << (v) << " - " << (w) << ":" << k << ";\n"; 
 
 	}
 
