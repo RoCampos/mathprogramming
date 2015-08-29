@@ -9,18 +9,29 @@ output=$2
 #o binário está no projeto de doutorado LpGenerator
 bin=$3
 
-for inst in `ls ${data_instances}`
+#budget passed to instance
+budget_file=$4
+list=( `cat ${budget_file}` )
+
+idx=0
+
+
+for inst in `ls -vH ${data_instances} --hide *~`
 do
 
-	file=`basename ${inst} .dat`
+	file=`basename ${inst} .brite`
 
 	#cria arquivos *.lp para servir de entrada no gurobi
-	time glpsol --check --wlp ${output}/${file}.lp --math src/mmmstp2.mod --data ${data_instances}/${inst}
+	#time glpsol --check --wlp ${output}/${file}.lp --math src/mmmstp2.mod --data ${data_instances}/${inst}
 
 	# Usa o Binário LpGenerator para gerar as instâncias
 	
 	#cria LP e adiciona no diretório ${output}
-	#${bin} ${data_instances}/${inst} > ${output}/${file}.lp
+	#when there is no budget 0 must be passed
+	#${bin} ${data_instances}/${inst} ${list[ ${idx} ]} > ${output}/${file}.lp
+	${bin} ${data_instances}/${inst} 0 > ${output}/${file}.lp
+
+	let "idx = idx + 1"
 
 	#comprime o arquivo gerando um gz.
 	#gzip ${output}/${file}.lp

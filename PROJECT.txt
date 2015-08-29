@@ -1,0 +1,34 @@
+Diretórios
+-----------------------------------------
+
+- data:
+	Contém arquivos da otimização do modelo mmstp.mod
+ 	Foi verificado que este modelo está incorreto.
+	No entanto, esta incorreção não afeta o valor de 
+	capacidade residual obtido durante a otimização.
+
+	O modelo foi corrigido: ele recebeu uma nova restrição
+	que evita uso indevido de arestas, quano estas não são
+	importantes para a solução.
+
+
+ - data2:
+	Contém os resultados da otimização do modelo mmstp.mod
+	quando limitado a um valor de budget. Os dados tem o 
+	mesmo problema que foi indicado para os casos de teste
+	de "data".
+
+ -	data3:
+	Contém os resultados da otimização por custo. O modelo
+	não contém a restrição "out" indicada por Elizabeth. No 
+	entanto, ele não permite que aresta não importantes para
+	solução fiquem na solução(aparentemente) - isto precisa
+	ser verificado.
+
+ -	bin:
+	Contém os binários necessário para teste nos resultados
+
+ -	src:
+	contém os modelos matemáticos necessários para otimização
+	utilizando o glpsol ou gerar arquivos LP utilizando o glpsol.
+

@@ -16,3 +16,9 @@ Taking some lessons about Math Programming.
 
 	#pegar informações geradas pelo solver
 ./get_opt.sh data/b120_result > data/b120_result/b120_solver_resumo.txt
+
+
+C++ codes
+---------------------------------------------------------------------
+filtro2 - main.cpp
+
