@@ -9,3 +9,5 @@ gurobi.log
 filtro2
 bin/
 tmp/
+tune
+dataLee
