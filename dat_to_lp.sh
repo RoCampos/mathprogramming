@@ -19,7 +19,7 @@ idx=0
 for inst in `ls -vH ${data_instances} --hide *~`
 do
 
-	file=`basename ${inst} .dat`
+	file=`basename ${inst} .brite`
 
 	#cria arquivos *.lp para servir de entrada no gurobi
 	#time glpsol --check --wlp ${output}/${file}.lp --math src/mmmstp2.mod --data ${data_instances}/${inst}
@@ -28,7 +28,9 @@ do
 	
 	#cria LP e adiciona no diretório ${output}
 	#when there is no budget 0 must be passed
-	${bin} ${data_instances}/${inst} ${list[ ${idx} ]} > ${output}/${file}.lp
+	#${bin} ${data_instances}/${inst} ${list[ ${idx} ]} > ${output}/${file}.lp
+	${bin} ${data_instances}/${inst} 0 > ${output}/${file}.lp
+
 	let "idx = idx + 1"
 
 	#comprime o arquivo gerando um gz.
