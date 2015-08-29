@@ -17,7 +17,7 @@ int main (int argv, char**argc)
 	//getting the instance
 	char* inst = basename (argc[1]);
 
-	float best, bound, time, gap;
+	float best = 0.0, bound, time, gap = 0.0;
 
 	int nodes, exp;
 
@@ -28,6 +28,8 @@ int main (int argv, char**argc)
 		sscanf (str.c_str(), "Best objective %f, best bound %f, gap %f",
 				&best,&bound,&gap);
 	
+		sscanf (str.c_str(), "Best objective -, best bound %f, gap -",
+				&bound);
 
 		sscanf (st.c_str(), "Explored %d nodes (%d simplex iterations) in %f seconds",
 				&nodes, &exp, &time);

@@ -10,7 +10,7 @@ int main (int argc, char**argv)
 
 	while ( getline (file,line) ) {
 
-		int v,w,k,bin;
+		int v,w,k,bin = -1;
 		sscanf (line.c_str(), "y(%d,%d,%d) %d", &v, &w, &k, &bin );
 
 		if (bin == 1)
