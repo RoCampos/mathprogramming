@@ -30,6 +30,8 @@ class Problem(object):
 
 x = Network(30)
 prob = Problem (x)
+
+print (prob.groups)
 					
 def solver (problem):
 
@@ -131,7 +133,7 @@ def solver (problem):
 
 	m.update()
 
-	m.write ("teste3.lp")
+	m.write ("teste.lp")
 
 	m.optimize()
 
