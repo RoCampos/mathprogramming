@@ -59,9 +59,10 @@ def solver (problem):
 	m.update()	
 
 	NODES = problem.network.nodes+1
-	links = problem.network.links
+	LINKS = problem.network.links
 	KSIZE = len(problem.groups)+1
 
+	## restrição de fluxo 1
 	for k in range (1, KSIZE ):
 		for d in problem.groups[k-1].members:
 			sk = problem.groups[k-1].source
@@ -70,28 +71,29 @@ def solver (problem):
 			m.addConstr (
 				quicksum ( var1[(i,sk,k,d)] 
 					for i in xrange(1, NODES) 
-						if sk != i and ((sk,i) in links or (i,sk) in links) 
+						if sk != i and ((sk,i) in LINKS or (i,sk) in LINKS) 
 						) - 
 				quicksum ( var1[(sk,i,k,d)] 
 					for i in xrange(1, NODES) 
-						if sk != i and ((sk,i) in links or (i,sk) in links) 
+						if sk != i and ((sk,i) in LINKS or (i,sk) in LINKS) 
 						) == -1, 
 				name=str(nameconst))
 
 	m.update()
 
-	# for k in range (1,6):
-	# 	for d in problem.groups[k]:								
-	# 		nameconst='flow2',k,d
-	# 		m.addConstr (
-	# 			quicksum ( var1[(i,j,k,d)] 
-	# 				for i,j in problem.network.links if i>j) - 
-	# 			quicksum ( var1[(i,j,k,d)] 
-	# 				for i,j in problem.network.links if j>i) == 0, 
-	# 			name=str(nameconst))
+	print (LINKS.keys()[0])
 
+	for k in range (1,KSIZE):
+		for d in problem.groups[k-1].members:								
+			nameconst='flow2',k,d
+			m.addConstr (
+				quicksum ( var1[( l[0],l[1],k,d)] 
+					for l in LINKS.keys() ) - 
+				quicksum ( var1[( (l[::-1])[0] , (l[::-1])[1] ,k,d)] 
+					for l in LINKS.keys()) == 0, 
+				name=str(nameconst))
 
-	# m.update ()
+	m.update ()
 
 	# for k in range (1,6):
 	# 	for d in problem.groups[k]:
