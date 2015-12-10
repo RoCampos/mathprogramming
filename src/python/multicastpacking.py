@@ -51,10 +51,10 @@ def solver (problem):
 
 
 	# CREATING objective function
-	objective = m.addVar (vtype=GRB.INTEGER, name="Z",obj=1)
-	m.update()
+	# objective = m.addVar (vtype=GRB.INTEGER, name="Z",obj=1)
+	# m.update()
 	
-	m.setObjective (objective, GRB.MAXIMIZE)
+	# m.setObjective (objective, GRB.MAXIMIZE)
 
 	m.update()	
 
@@ -95,18 +95,18 @@ def solver (problem):
 
 	m.update ()
 
-	# for k in range (1,6):
-	# 	for d in problem.groups[k]:
-	# 		nameconst='flow3',k,d
-	# 		sk = problem.source[k]
-	# 		m.addConstr (
-	# 			quicksum ( var1[(i,j,k,d)] 
-	# 				for i,j in problem.network.links if i>j & j not in [sk,d] ) - 
-	# 			quicksum ( var1[(i,j,k,d)] 
-	# 				for i,j in problem.network.links if j>i & j not in [sk,d] ) == 1, 
-	# 			name=str(nameconst))
+	for k in range (1,KSIZE):
+		for d in problem.groups[k-1].members:
+			nameconst='flow3',k,d
+			sk = problem.groups[k-1].source
+			m.addConstr (
+				quicksum ( var1[( l[0] , l[1] , k , d)] 
+					for l in LINKS.keys() if l[1] not in [sk,d] ) - 
+				quicksum ( var1[( (l[::-1])[0] , (l[::-1])[1] , k , d )] 
+					for l in LINKS.keys() if (l[::-1])[0] not in [sk,d] ) == 1, 
+				name=str(nameconst))
 
-	# m.update ()
+	m.update ()
 
 	# # first constraint of the problemlem
 	# for k in range (1,6):				
@@ -117,28 +117,36 @@ def solver (problem):
 	# 				name=str (constname)
 	# 				)
 	# m.update ()
+
+
 	# # second constraint of the problemlem
 	# for k in range (1,6):
 	# 	for i,j in problem.network.links:
 	# 		constname='r6',i,j,k
 	# 		m.addConstr	(
-
 	# 			quicksum ( var1[(i,j,k,d)] for d in problem.groups[k]) - 
 	# 			var2[(i,j,k)] <= 0,
 	# 			name=str(constname)
 	# 			)
 
 	# m.update ()
-	# # capacity of the network	
-	# for i,j in problem.network.links:
-	# 	constname='r7',i,j
-	# 	m.addConstr (
-	# 		5 - 
-	# 		quicksum ( var2[(i,j,k)] * problem.tk for k in range(1,6)) >= objective,
-	# 		name=str(constname)
-	# 	)
+	
+	# capacity of the network	
+	for i,j in LINKS:
+		constname='cap',i,j
+		m.addConstr (
+			LINKS[(i,j)][1] - 
+			quicksum ( var2[(i,j,k)] * problem.groups[k-1].traffic for k in range(1,KSIZE)) >= 0,
+			name=str(constname)
+		)
+		constname='cap',j,i
+		m.addConstr (
+			LINKS[(i,j)][1] - 
+			quicksum ( var2[(j,i,k)] * problem.groups[k-1].traffic for k in range(1,KSIZE)) >= 0,
+			name=str(constname)
+		)
 
-	# m.update()
+	m.update()
 
 	m.write ("teste3.lp")
 

@@ -43,18 +43,6 @@ class MulticastGroup(object):
 		self.i=0
 		self.n=len(self.members)
 
-	def __iter__(self):
-		return self
-
-	def next (self):
-		if (self.i < self.n):
-			i = self.i
-			self.i = self.i + 1
-			return self.members[i]
-		else:
-			self.i = 0
-			return StopIteration()
-
 	def get_id(self):
 		return self.id
 

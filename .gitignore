@@ -12,3 +12,4 @@ tmp/
 tune
 dataLee
 *.pyc
+*.lp
