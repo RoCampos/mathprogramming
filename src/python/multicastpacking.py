@@ -19,55 +19,55 @@ def solver (problem):
 	
 	m = Model ("MPP")
 
-	print (problem.network.nodes)
-	print (problem.network.links)
-	print (problem.groups)
-
-	
+	NODES = problem.network.nodes+1
+	LINKS = problem.network.links
+	KSIZE = len(problem.groups)+1
 
 	var1 = {}
 
-	for i in range (1, (problem.network.nodes+1)):
-		for j in range (1, (problem.network.nodes+1)):
-			if (i!=j) & ((i,j) in problem.network.links):
+	for i in range (1, (NODES)):
+		for j in range (1, (NODES)):
+			if (i!=j) & ((i,j) in LINKS):
 				for k in range ( 1, len(problem.groups)+1 ):				
 					for d in problem.groups[k-1].members:						
 						t=i,j,k,d
 						tupla='x'+str (t)
-						var1[t] = m.addVar (vtype=GRB.BINARY, obj=1,name=tupla)												
+						var1[t] = m.addVar (vtype=GRB.BINARY, obj=1,name=tupla, ub=1.0, lb=0.0)												
 						t=j,i,k,d
 						tupla='x'+str (t)
-						var1[t] = m.addVar (vtype=GRB.BINARY, obj=1,name=tupla)
+						var1[t] = m.addVar (vtype=GRB.BINARY, obj=1,name=tupla, ub=1.0, lb=0.0)
 
 	var2 ={}
-	for k in range (1, len (problem.groups)+1): # for each group multicast
-		for i,j in problem.network.links:
-			t=i,j,k
+	for k in range (1, KSIZE): # for each group multicast
+		for l in LINKS.keys():
+			t=l[0],l[1],k
 			tupla='y'+str (t)
-			var2[t] = m.addVar (vtype=GRB.BINARY, obj=1, name=tupla)
-			t=j,i,k
+			var2[t] = m.addVar (vtype=GRB.BINARY, obj=1, name=tupla, ub=1.0, lb=0.0)
+			t=l[1],l[0],k
 			tupla='y'+str (t)
-			var2[t] = m.addVar (vtype=GRB.BINARY, obj=1, name=tupla)
+			var2[t] = m.addVar (vtype=GRB.BINARY, obj=1, name=tupla, ub=1.0, lb=0.0)
 
 
-	# CREATING objective function
-	# objective = m.addVar (vtype=GRB.INTEGER, name="Z",obj=1)
-	# m.update()
 	
-	# m.setObjective (objective, GRB.MAXIMIZE)
+	m.update()
+	
+	expr  = []	
+	for k in xrange (1, KSIZE ):
+	 	expr.append ( quicksum (var2[ (l[0],l[1],k) ] * LINKS[l][0] 
+	 		for l in LINKS.keys()) )	
+	 	expr.append ( quicksum (var2[ (l[1],l[0],k) ] * LINKS[l][0] 
+	 		for l in LINKS.keys()) )
+	
 
-	m.update()	
+	m.setObjective (quicksum (expr), GRB.MINIMIZE)
+	m.update ()
 
-	NODES = problem.network.nodes+1
-	LINKS = problem.network.links
-	KSIZE = len(problem.groups)+1
 
 	## restrição de fluxo 1
 	for k in range (1, KSIZE ):
 		for d in problem.groups[k-1].members:
 			sk = problem.groups[k-1].source
-			nameconst='flow1',k,d			
-
+			nameconst='flow1',k,d	
 			m.addConstr (
 				quicksum ( var1[(i,sk,k,d)] 
 					for i in xrange(1, NODES) 
@@ -81,15 +81,13 @@ def solver (problem):
 
 	m.update()
 
-	print (LINKS.keys()[0])
-
 	for k in range (1,KSIZE):
 		for d in problem.groups[k-1].members:								
 			nameconst='flow2',k,d
 			m.addConstr (
 				quicksum ( var1[( l[0],l[1],k,d)] 
 					for l in LINKS.keys() ) - 
-				quicksum ( var1[( (l[::-1])[0] , (l[::-1])[1] ,k,d)] 
+				quicksum ( var1[( l[1] , l[0] ,k,d)] 
 					for l in LINKS.keys()) == 0, 
 				name=str(nameconst))
 
@@ -102,8 +100,8 @@ def solver (problem):
 			m.addConstr (
 				quicksum ( var1[( l[0] , l[1] , k , d)] 
 					for l in LINKS.keys() if l[1] not in [sk,d] ) - 
-				quicksum ( var1[( (l[::-1])[0] , (l[::-1])[1] , k , d )] 
-					for l in LINKS.keys() if (l[::-1])[0] not in [sk,d] ) == 1, 
+				quicksum ( var1[( l[1] , l[0] , k , d )] 
+					for l in LINKS.keys() if l[1] not in [sk,d] ) == 1, 
 				name=str(nameconst))
 
 	m.update ()
@@ -136,13 +134,13 @@ def solver (problem):
 		constname='cap',i,j
 		m.addConstr (
 			LINKS[(i,j)][1] - 
-			quicksum ( var2[(i,j,k)] * problem.groups[k-1].traffic for k in range(1,KSIZE)) >= 0,
+			quicksum ( var2[(i,j,k)] * problem.groups[k-1].traffic for k in range(1,KSIZE)) >= 3,
 			name=str(constname)
 		)
 		constname='cap',j,i
 		m.addConstr (
 			LINKS[(i,j)][1] - 
-			quicksum ( var2[(j,i,k)] * problem.groups[k-1].traffic for k in range(1,KSIZE)) >= 0,
+			quicksum ( var2[(j,i,k)] * problem.groups[k-1].traffic for k in range(1,KSIZE)) >= 3,
 			name=str(constname)
 		)
 
@@ -150,7 +148,7 @@ def solver (problem):
 
 	m.write ("teste3.lp")
 
-	# m.optimize()
+	m.optimize()
 
 
 
