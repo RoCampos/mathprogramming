@@ -22,7 +22,7 @@ def get_network(file):
 				link = (min(v,w), max(v,w))
 				cost = int(float((line[3])))
 				band = int(float((line[5])))
-				link_property = (cost,band)
+				link_property = (cost,band+20)
 				network_links[link] = link_property
 				edges = edges - 1	
 
