@@ -11,3 +11,7 @@ bin/
 tmp/
 tune
 dataLee
+*.pyc
+*.lp
+src/Math.sublime-workspace
+.ipynb_checkpoints/
