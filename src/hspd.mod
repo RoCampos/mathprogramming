@@ -44,10 +44,10 @@ minimize hstp:
 		u[w] = 0;
 
 	C4{k in V: k <> w}: 
-		sum{(i,j) in LINKS: k == j} x[i,k] <= u[k];
+		sum{(i,k) in LINKS} x[i,k] <= u[k];
 
 	C5{k in V: k <> w}:
-		u[k] <= H * sum{(i,j) in LINKS: k ==j} x[i,k];
+		u[k] <= H * sum{(i,k) in LINKS} x[i,k];
 
 	C6{(i,j) in LINKS}:
 		(H+1) * x[i,j] + u[i] - u[j] + (H-1)*x[i,j] <= H;
