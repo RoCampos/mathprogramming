@@ -25,7 +25,7 @@ param H; #hop limit
 
 
 ## ----------- variable section ----------- ##
-var u{V}, binary;
+var u{V};
 var x{(i,j) in LINKS}, binary;
 
 ## ------------ model section ------------- ##
@@ -37,7 +37,7 @@ minimize hstp:
 	C1{k in Q}:
 		sum { (i,j) in LINKS: j == k} x[i,j] = 1;
 
-	C2{ (i,j) in LINKS: i not in Q}:
+	C2{ (i,j) in LINKS: i not in Q and i <> w}:
 		x[i,j] <= sum{ k in V: (k,i) in LINKS} x[k,i];
 
 	C3:
@@ -50,7 +50,7 @@ minimize hstp:
 		u[k] <= H * sum{(i,k) in LINKS} x[i,k];
 
 	C6{(i,j) in LINKS}:
-		(H+1) * x[i,j] + u[i] - u[j] + (H-1)*x[i,j] <= H;
+		(H+1) * x[i,j] + u[i] - u[j] + (H-1)*x[j,i] <= H;
 
 solve;
 
