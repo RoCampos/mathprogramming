@@ -15,3 +15,6 @@ dataLee
 *.lp
 src/Math.sublime-workspace
 .ipynb_checkpoints/
+
+#ignoring venv python
+src/multi/multi

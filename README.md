@@ -22,3 +22,30 @@ C++ codes
 ---------------------------------------------------------------------
 filtro2 - main.cpp
 
+
+src/multi
+
+# Multiobjective Multicast Routing Packing Problem
+
+In this module, the python library Jupyter is used to show the implementation of the models. So far, some
+models were implement to test the Gurobi python API. 
+
+## Installation
+
+### creating virtualenv
+	virtualenv --python=/usr/bin/python2.7 --system-site-packages multi
+	pip install --ignore-installed <package-name>
+	It is necessary to import gurobipy to solve the models
+
+### Mathmatical Models
+
+	Lee e Cho (2004) - Cost optimziation subject to the number of links in associated to each multicast tree
+
+	Model1 - Optimizing Z (Residual Capacity)
+
+	Model2 - Optimizing the solution cost
+
+	Model3 - Steiner tree implementation
+
+	Model4 - Multiobjective model (three objectives): cost, Z, hop counting
+
